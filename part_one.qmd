@@ -1,0 +1,138 @@
+---
+title: "portfolio_part_one"
+author: "Achsah Jojo"
+format: html
+---
+
+## Data Description
+
+1. Identify your data source.
+
+The data is from the Sonoma County Animal Shelter. 
+https://data.sonomacounty.ca.gov/Government/Animal-Shelter-Intake-and-Outcome/924a-vesw/about_data
+
+
+2. Describe your data, including variables and data types.
+
+The dataset includes a mix of categorical, numeric, and date variables. Some of the main variables I expect to use are:
+
+Animal Type: categorical; whether the animal is a dog, cat, or another type
+
+Breed : categorical; the breed or breed mix of the dog
+
+Intake Type : categorical; how the dog entered the shelter, such as stray, owner surrender, or transfer
+
+Intake Condition : categorical; the dog’s condition when entering the shelter
+
+Outcome Type : categorical;  the result for the dog, such as adoption, euthanasia, return to owner, or transfer
+
+Sex : categorical; the sex of the dog
+
+Size : categorical; the size category of the dog
+
+Date of Birth – date; estimate age
+
+Intake Date : date; the date the dog entered the shelter
+
+Outcome Date : date; the date the dog left the shelter or received an outcome
+
+Days in Shelter : numeric; the number of days the dog spent in the shelter
+
+3. Identify the research questions you want to answer.
+
+My primary goal is to analyze how different factors influence a dog’s length of stay in the shelter and likelihood of adoption. By understanding these relationships, I hope to suggest strategies for improving adoption campaigns, resource allocation, and shelter policies.
+
+The main research questions for this project are:
+
+- How does breed affect a dog’s average length of stay in the shelter?
+
+- Does intake type affect how long a dog stays in the shelter?
+
+- Which dog characteristics are associated with faster adoption?
+
+- Which dog characteristics are associated with a higher likelihood of adoption rather than other outcomes such as euthanasia or transfer?
+
+- Are there seasonal trends in dog adoptions or shelter stays?
+
+- Do factors such as size, age, or intake condition appear to influence adoption outcomes?
+
+
+## Data Visualization
+1. What do you want your final visualizations to look like?
+
+I want my final visualizations to be clear and easy to interpret for someone who may not have a technical background. I expect to use a mix of:
+
+- Bar charts to compare average length of stay across breeds, intake types, or size groups
+
+- Boxplots to show the spread and variation in shelter stay for different categories
+
+- Stacked or grouped bar charts to compare outcome types such as adoption, euthanasia, and transfer across groups
+
+- Line charts to show adoption trends over time or by month
+
+2. What do you want to highlight on your final visualizations in order to answer your research questions? How do you plan to do that?
+
+I want the visualizations to highlight which groups of dogs stay in the shelter the longest, which groups are adopted the fastest, and whether certain characteristics are associated with more positive or negative outcomes. To find out more about this, I will: 
+
+- Compare average or median days in shelter across breeds, intake types, and size categories
+
+- Highlight the most common or most important categories rather than showing every breed if there are too many
+
+- Use outcome comparisons to show whether some groups are more likely to be adopted, euthanized, or transferred
+
+- Show time based trends to see whether adoptions increase during certain months or seasons
+
+3. What is missing from your data or would need to change in your data to create these visualizations?
+
+- Date columns may need to be converted into proper date format
+
+- Age may need to be calculated from date of birth
+
+- A new variable for adoption outcome may need to be created
+
+- Rare breeds may need to be grouped into an “Other” category so the graphs are readable
+
+- Missing or incomplete records may need to be removed or dealt with
+
+- I may need to create a month or season variable from the date columns
+
+## Data Cleaning
+
+The answer to at least three of these questions should be “YES” for the data to meet the necessary standards to demonstrate your cleaning. Your data source should not be an already perfectly prepared data set.
+
+1. Do you need to reformat any variables into different types (e.g. factors, time, dates, strings)? Or remove information from variable values?
+
+Yes. Date variables such as intake date, outcome date, and date of birth need to be converted into proper date formats. Categorical variables such as breed, intake type, outcome type, and size may also need to be converted into factors.
+
+2. Do you need to deal with any missing data, especially missing data coded other than NA?
+
+Yes. Some records  have missing or incomplete values in important columns such as breed, intake type, outcome type, or dates.
+
+3. Do you need to filter your data? How?
+
+Yes. I will need to filter the dataset to include dogs only, since the full dataset contains multiple animal types.
+
+4. Do you need to create any new variables? What variables? How?
+
+Adoption indicator, such as whether the outcome type is adoption or not. Age group, based on date of birth or estimated age. Month or season, based on intake or outcome dates for time trend analysis
+
+5. Do you need to add new data (join) to your data? What data? How?
+
+No. At this point, I do not expect to join additional datasets.
+
+6. Do you need pivot your data in any way? Why? How?
+No I do not.
+
+7. Do you need to summarize any of the variables? Which ones? How?
+Yes. I will need to summarize variables such as Days in Shelter using averages, medians, or ranges. Outcome Type using counts or proportions
+and Breed, Intake Type, and Size by grouping and comparing outcomes or length of stay.
+
+8. What other aspects of your data need to be “fixed” in order to make your data visualizations?
+
+Some breed categories may be too rare, so I may need to combine them into broader "other" categories. I may also need to check for duplicate records, inconsistent category names, or extreme values that could mess with the visualizations.
+
+Most will answer yes to the following for making your programming more efficient using select(), but you should have three other yeses above.
+
+9. Are there any variables you can exclude from your data?
+
+Yes such as all animals that are not dogs and all the columns that I will not be looking at. 
