@@ -136,3 +136,189 @@ Most will answer yes to the following for making your programming more efficient
 9. Are there any variables you can exclude from your data?
 
 Yes such as all animals that are not dogs and all the columns that I will not be looking at. 
+
+```{r}
+# loading packages 
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(forcats)
+library(purrr)
+library(readr)
+```
+
+```{r}
+
+## Read in the data
+animals <- read_csv("Animal_Shelter_Intake_and_Outcome.csv")
+```
+
+```{r}
+## clean names 
+
+animals_clean <- animals |>
+  clean_names()
+
+names(animals_clean)
+```
+```{r}
+
+dogs <- animals_clean |>
+  filter(type == "DOG")
+```
+
+```{r}
+## Replace blank values with NA
+dogs <- dogs |>
+  mutate(
+    across(
+      c(name, breed, color, sex, size, intake_type, intake_subtype,
+        intake_condition, outcome_type, outcome_subtype, outcome_condition,
+        intake_jurisdiction, outcome_jurisdiction),
+      ~ na_if(., "")
+    )
+  )
+```
+
+```{r}
+## Standardize text values
+dogs <- dogs |>
+  mutate(
+    name = str_to_title(str_trim(name)),
+    breed = str_to_title(str_trim(breed)),
+    color = str_to_title(str_trim(color)),
+    sex = str_to_title(str_trim(sex)),
+    size = str_to_upper(str_trim(size)),
+    intake_type = str_to_title(str_trim(intake_type)),
+    intake_subtype = str_to_title(str_trim(intake_subtype)),
+    intake_condition = str_to_title(str_trim(intake_condition)),
+    outcome_type = str_to_title(str_trim(outcome_type)),
+    outcome_subtype = str_to_title(str_trim(outcome_subtype)),
+    outcome_condition = str_to_title(str_trim(outcome_condition)),
+    intake_jurisdiction = str_to_title(str_trim(intake_jurisdiction)),
+    outcome_jurisdiction = str_to_title(str_trim(outcome_jurisdiction))
+  )
+```
+
+```{r}
+## Convert date variables
+dogs <- dogs |>
+  mutate(
+    date_of_birth = mdy(date_of_birth),
+    intake_date = mdy(intake_date),
+    outcome_date = mdy(outcome_date)
+  )
+```
+
+```{r}
+## Remove duplicate rows
+
+dogs <- dogs |>
+  distinct()
+```
+
+```{r}
+
+## Create new variables
+
+# creates the adoption indicator, age at intake, age groups, month, year, and season.
+
+dogs <- dogs |>
+  mutate(
+    adopted = if_else(outcome_type == "Adoption", 1, 0),
+    age_at_intake_years = as.numeric(interval(date_of_birth, intake_date) / years(1)),
+    
+    age_group = case_when(
+      is.na(age_at_intake_years) ~ NA_character_,
+      age_at_intake_years < 1 ~ "Puppy",
+      age_at_intake_years < 3 ~ "Young Adult",
+      age_at_intake_years < 8 ~ "Adult",
+      age_at_intake_years >= 8 ~ "Senior"
+    ),
+    
+    intake_month = month(intake_date, label = TRUE, abbr = FALSE),
+    intake_year = year(intake_date),
+    outcome_month = month(outcome_date, label = TRUE, abbr = FALSE),
+    outcome_year = year(outcome_date),
+    
+    intake_season = case_when(
+      month(intake_date) %in% c(12, 1, 2) ~ "Winter",
+      month(intake_date) %in% c(3, 4, 5) ~ "Spring",
+      month(intake_date) %in% c(6, 7, 8) ~ "Summer",
+      month(intake_date) %in% c(9, 10, 11) ~ "Fall"
+    ),
+    
+    outcome_season = case_when(
+      month(outcome_date) %in% c(12, 1, 2) ~ "Winter",
+      month(outcome_date) %in% c(3, 4, 5) ~ "Spring",
+      month(outcome_date) %in% c(6, 7, 8) ~ "Summer",
+      month(outcome_date) %in% c(9, 10, 11) ~ "Fall"
+    )
+  )
+```
+
+
+```{r}
+
+## Fix impossible values
+
+dogs <- dogs |>
+  mutate(
+    days_in_shelter = if_else(days_in_shelter < 0, NA_real_, as.numeric(days_in_shelter)),
+    age_at_intake_years = if_else(age_at_intake_years < 0, NA_real_, age_at_intake_years)
+  )
+```
+
+```{r}
+
+
+## Keep rows needed for analysis
+
+dogs_clean <- dogs |>
+  filter(!is.na(intake_date), !is.na(outcome_type))
+```
+
+```{r}
+  
+## Group less common breeds into "Other"
+dogs_clean <- dogs_clean |>
+  mutate(
+    breed_grouped = fct_lump_n(as.factor(breed), n = 10, other_level = "Other")
+  )
+```
+
+```{r}
+## Convert important variables to factors
+
+dogs_clean <- dogs_clean |>
+  mutate(
+    size = factor(size, levels = c("TOY", "SMALL", "MED", "LARGE")),
+    age_group = factor(age_group, levels = c("Puppy", "Young Adult", "Adult", "Senior")),
+    intake_type = as.factor(intake_type),
+    outcome_type = as.factor(outcome_type)
+  )
+```
+
+```{r}
+## make cleaned data folder
+
+dir.create("clean", showWarnings = FALSE)
+```
+
+```{r}
+## Save the cleaned data into the clean folder
+
+write_csv(dogs_clean, "clean/dogs_clean.csv")
+```
+
+# Summary of Data Cleaning 
+
+> I first imported the Sonoma County Animal Shelter dataset and cleaned the column names using `clean_names()`. Then I filtered the data so that only dogs were included, since my project focuses only on dog shelter outcomes.
+
+> Next, I changed blank values to missing values (`NA`) and standardized several text variables such as breed, color, sex, intake type, and outcome type so that categories would be more consistent. I also converted the date of birth, intake date, and outcome date variables into proper date format.
+
+> After that, I removed duplicate rows and created several new variables that will help answer my research questions. These included an adoption indicator, age at intake in years, age group, intake and outcome month, intake and outcome year, and season variables.
+
+> I also checked for impossible values, such as negative days in shelter or negative ages, and changed those values to missing. Then I filtered out rows missing key variables needed for analysis.
+
+> Finally, I used `forcats` to group less common breeds into an `"Other"` category and converted important categorical variables into factors. The cleaned data was then saved into a separate `clean` folder as `dogs_clean.csv`.
